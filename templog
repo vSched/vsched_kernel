@@ -1,0 +1,8 @@
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1750.300000
+User Time 21130.700000
+System Time 4362.050000
+Percent CPU 1456.000000
+Context Switches 5323986.000000
+Sleeps 4330959.000000
+

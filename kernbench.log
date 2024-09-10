@@ -1,0 +1,852 @@
+Fri Oct 13 06:22:09 PM EDT 2023
+6.1.36vsched+
+Fri Oct 13 06:23:48 PM EDT 2023
+6.1.36vsched+
+Fri Oct 13 06:24:58 PM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 128 Run (std deviation):
+Elapsed Time 2197.600000
+User Time 27779.360000
+System Time 5413.140000
+Percent CPU 1510.000000
+Context Switches 8976594.000000
+Sleeps 4611413.000000
+
+Mon Oct 30 09:45:29 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 128 Run (std deviation):
+Elapsed Time 1853.200000
+User Time 25606.250000
+System Time 5056.530000
+Percent CPU 1654.000000
+Context Switches 9798458.000000
+Sleeps 6242155.000000
+
+Mon Oct 30 10:31:24 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 128 Run (std deviation):
+Elapsed Time 2266.620000
+User Time 24182.370000
+System Time 4969.940000
+Percent CPU 1286.000000
+Context Switches 8074175.000000
+Sleeps 5264296.000000
+
+Mon Oct 30 11:11:58 AM EDT 2023
+6.1.36vsched+
+Mon Oct 30 11:48:22 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 128 Run (std deviation):
+Elapsed Time 2265.430000
+User Time 24276.070000
+System Time 4977.530000
+Percent CPU 1291.000000
+Context Switches 8076563.000000
+Sleeps 5281363.000000
+
+Mon Oct 30 12:28:58 PM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 128 Run (std deviation):
+Elapsed Time 2226.630000
+User Time 23900.380000
+System Time 4806.590000
+Percent CPU 1289.000000
+Context Switches 8006484.000000
+Sleeps 5265189.000000
+
+Mon Oct 30 01:09:29 PM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 128 Run (std deviation):
+Elapsed Time 2027.700000
+User Time 24347.180000
+System Time 4639.810000
+Percent CPU 1429.000000
+Context Switches 8497614.000000
+Sleeps 5409317.000000
+
+Mon Oct 30 01:45:49 PM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 128 Run (std deviation):
+Elapsed Time 2023.400000
+User Time 24467.940000
+System Time 4645.900000
+Percent CPU 1438.000000
+Context Switches 8537678.000000
+Sleeps 5383445.000000
+
+Mon Oct 30 02:20:37 PM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 128 Run (std deviation):
+Elapsed Time 2005.540000
+User Time 24883.550000
+System Time 4698.040000
+Percent CPU 1474.000000
+Context Switches 8958864.000000
+Sleeps 5572306.000000
+
+Mon Oct 30 02:55:07 PM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 128 Run (std deviation):
+Elapsed Time 1986.620000
+User Time 24741.300000
+System Time 4618.220000
+Percent CPU 1477.000000
+Context Switches 8925374.000000
+Sleeps 5568462.000000
+
+Mon Oct 30 03:29:00 PM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 128 Run (std deviation):
+Elapsed Time 1974.630000
+User Time 24874.200000
+System Time 4594.040000
+Percent CPU 1492.000000
+Context Switches 9181192.000000
+Sleeps 5623820.000000
+
+Mon Oct 30 04:02:33 PM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 128 Run (std deviation):
+Elapsed Time 1993.560000
+User Time 25121.500000
+System Time 4648.130000
+Percent CPU 1493.000000
+Context Switches 9215434.000000
+Sleeps 5628597.000000
+
+Mon Oct 30 04:36:33 PM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 128 Run (std deviation):
+Elapsed Time 1997.280000
+User Time 25372.350000
+System Time 4648.100000
+Percent CPU 1503.000000
+Context Switches 9349529.000000
+Sleeps 5663559.000000
+
+Mon Oct 30 05:10:31 PM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 128 Run (std deviation):
+Elapsed Time 2024.860000
+User Time 25692.990000
+System Time 4755.770000
+Percent CPU 1503.000000
+Context Switches 9455113.000000
+Sleeps 5679924.000000
+
+Mon Oct 30 05:45:03 PM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 128 Run (std deviation):
+Elapsed Time 2012.530000
+User Time 25352.730000
+System Time 4865.400000
+Percent CPU 1501.000000
+Context Switches 9314769.000000
+Sleeps 5666851.000000
+
+Mon Oct 30 06:18:59 PM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 128 Run (std deviation):
+Elapsed Time 2026.220000
+User Time 25683.710000
+System Time 4774.850000
+Percent CPU 1503.000000
+Context Switches 9413062.000000
+Sleeps 5656957.000000
+
+Mon Oct 30 11:15:46 PM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 2214.610000
+User Time 20974.330000
+System Time 4202.800000
+Percent CPU 1136.000000
+Context Switches 4290998.000000
+Sleeps 3907032.000000
+
+Tue Oct 31 12:51:53 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 2235.680000
+User Time 21147.160000
+System Time 4293.160000
+Percent CPU 1137.000000
+Context Switches 4299830.000000
+Sleeps 3919649.000000
+
+Tue Oct 31 02:03:23 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1963.210000
+User Time 21812.730000
+System Time 4363.080000
+Percent CPU 1333.000000
+Context Switches 4646098.000000
+Sleeps 3966118.000000
+
+Tue Oct 31 03:03:48 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1977.290000
+User Time 21988.480000
+System Time 4371.090000
+Percent CPU 1333.000000
+Context Switches 4683321.000000
+Sleeps 3942492.000000
+
+Tue Oct 31 03:56:12 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1891.570000
+User Time 22226.100000
+System Time 4422.540000
+Percent CPU 1408.000000
+Context Switches 4964195.000000
+Sleeps 4059758.000000
+
+Tue Oct 31 04:50:31 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1886.280000
+User Time 22298.510000
+System Time 4436.890000
+Percent CPU 1417.000000
+Context Switches 4980584.000000
+Sleeps 4052820.000000
+
+Tue Oct 31 05:30:01 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1870.950000
+User Time 22473.910000
+System Time 4439.660000
+Percent CPU 1438.000000
+Context Switches 5292176.000000
+Sleeps 4268550.000000
+
+Tue Oct 31 06:13:18 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1876.870000
+User Time 22524.970000
+System Time 4541.260000
+Percent CPU 1442.000000
+Context Switches 5285136.000000
+Sleeps 4240250.000000
+
+Tue Oct 31 07:00:18 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1891.840000
+User Time 23038.240000
+System Time 4677.190000
+Percent CPU 1464.000000
+Context Switches 5746728.000000
+Sleeps 4401397.000000
+
+Tue Oct 31 07:43:17 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1885.170000
+User Time 23037.220000
+System Time 4578.400000
+Percent CPU 1464.000000
+Context Switches 5772724.000000
+Sleeps 4387995.000000
+
+Tue Oct 31 08:28:47 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1858.070000
+User Time 22608.640000
+System Time 4485.530000
+Percent CPU 1458.000000
+Context Switches 5703717.000000
+Sleeps 4351328.000000
+
+Tue Oct 31 09:13:52 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1882.620000
+User Time 22839.000000
+System Time 4602.320000
+Percent CPU 1457.000000
+Context Switches 5711790.000000
+Sleeps 4341267.000000
+
+Wed Nov  1 03:00:40 AM EDT 2023
+6.1.36vsched+
+Wed Nov  1 03:26:30 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 2236.320000
+User Time 20984.960000
+System Time 4280.020000
+Percent CPU 1129.000000
+Context Switches 4270380.000000
+Sleeps 3891613.000000
+
+Wed Nov  1 05:04:45 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 2213.610000
+User Time 20991.990000
+System Time 4349.380000
+Percent CPU 1144.000000
+Context Switches 4288686.000000
+Sleeps 3894380.000000
+
+Wed Nov  1 06:13:06 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1973.210000
+User Time 21752.120000
+System Time 4370.840000
+Percent CPU 1323.000000
+Context Switches 4621536.000000
+Sleeps 3924637.000000
+
+Wed Nov  1 07:29:08 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1984.590000
+User Time 21799.440000
+System Time 4380.240000
+Percent CPU 1319.000000
+Context Switches 4603284.000000
+Sleeps 3917978.000000
+
+Wed Nov  1 08:21:02 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1880.980000
+User Time 21978.050000
+System Time 4447.380000
+Percent CPU 1404.000000
+Context Switches 4968209.000000
+Sleeps 4052167.000000
+
+Wed Nov  1 09:06:30 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1899.540000
+User Time 22252.900000
+System Time 4469.640000
+Percent CPU 1406.000000
+Context Switches 4962906.000000
+Sleeps 4030917.000000
+
+Wed Nov  1 09:49:33 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1872.650000
+User Time 22392.960000
+System Time 4582.290000
+Percent CPU 1440.000000
+Context Switches 5299342.000000
+Sleeps 4213605.000000
+
+Wed Nov  1 10:30:52 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1867.370000
+User Time 22447.190000
+System Time 4534.710000
+Percent CPU 1444.000000
+Context Switches 5287819.000000
+Sleeps 4235133.000000
+
+Wed Nov  1 11:07:54 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1854.520000
+User Time 22580.850000
+System Time 4566.930000
+Percent CPU 1463.000000
+Context Switches 5545845.000000
+Sleeps 4407088.000000
+
+Wed Nov  1 11:44:18 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1872.990000
+User Time 22805.620000
+System Time 4599.410000
+Percent CPU 1463.000000
+Context Switches 5536437.000000
+Sleeps 4398441.000000
+
+Wed Nov  1 12:21:26 PM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1856.110000
+User Time 22539.220000
+System Time 4548.960000
+Percent CPU 1459.000000
+Context Switches 5455442.000000
+Sleeps 4359057.000000
+
+Wed Nov  1 12:57:29 PM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1869.110000
+User Time 22754.930000
+System Time 4555.540000
+Percent CPU 1461.000000
+Context Switches 5459226.000000
+Sleeps 4335254.000000
+
+Wed Nov  1 01:32:55 PM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 950.810000
+User Time 22466.210000
+System Time 4990.940000
+Percent CPU 2887.000000
+Context Switches 7950224.000000
+Sleeps 6436309.000000
+
+Wed Nov  1 01:52:56 PM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 942.150000
+User Time 22280.220000
+System Time 4935.470000
+Percent CPU 2888.000000
+Context Switches 7965356.000000
+Sleeps 6413828.000000
+
+Wed Nov  1 02:12:51 PM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 938.430000
+User Time 22101.750000
+System Time 4892.530000
+Percent CPU 2876.000000
+Context Switches 7961437.000000
+Sleeps 6400996.000000
+
+Wed Nov  1 02:32:42 PM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 957.250000
+User Time 22576.260000
+System Time 5033.330000
+Percent CPU 2884.000000
+Context Switches 7965875.000000
+Sleeps 6447880.000000
+
+Wed Nov  1 02:52:52 PM EDT 2023
+6.1.36vsched+
+Wed Nov  1 03:22:18 PM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 2146.390000
+User Time 19653.720000
+System Time 4015.040000
+Percent CPU 1102.000000
+Context Switches 4182731.000000
+Sleeps 3887242.000000
+
+Fri Nov  3 02:08:23 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 2109.660000
+User Time 19796.770000
+System Time 4010.420000
+Percent CPU 1128.000000
+Context Switches 3203208.000000
+Sleeps 3121056.000000
+
+Fri Nov  3 03:32:38 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 2048.050000
+User Time 19689.310000
+System Time 3935.790000
+Percent CPU 1153.000000
+Context Switches 3212604.000000
+Sleeps 3138668.000000
+
+Fri Nov  3 04:45:28 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1871.480000
+User Time 20291.830000
+System Time 4053.630000
+Percent CPU 1300.000000
+Context Switches 3603448.000000
+Sleeps 3257676.000000
+
+Fri Nov  3 05:53:38 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1904.100000
+User Time 20390.220000
+System Time 4103.510000
+Percent CPU 1286.000000
+Context Switches 3543070.000000
+Sleeps 3240988.000000
+
+Fri Nov  3 06:47:26 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1789.470000
+User Time 20497.900000
+System Time 4181.500000
+Percent CPU 1379.000000
+Context Switches 3861454.000000
+Sleeps 3377987.000000
+
+Fri Nov  3 07:38:56 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1815.200000
+User Time 20763.970000
+System Time 4217.030000
+Percent CPU 1376.000000
+Context Switches 3912730.000000
+Sleeps 3358184.000000
+
+Fri Nov  3 08:20:54 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1758.340000
+User Time 20764.850000
+System Time 4188.580000
+Percent CPU 1419.000000
+Context Switches 4097101.000000
+Sleeps 3440712.000000
+
+Fri Nov  3 09:03:49 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1774.130000
+User Time 20956.150000
+System Time 4262.620000
+Percent CPU 1421.000000
+Context Switches 4038594.000000
+Sleeps 3429723.000000
+
+Fri Nov  3 09:45:42 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1749.500000
+User Time 20977.060000
+System Time 4274.410000
+Percent CPU 1443.000000
+Context Switches 4194826.000000
+Sleeps 3497982.000000
+
+Fri Nov  3 10:26:08 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1757.230000
+User Time 21127.540000
+System Time 4289.880000
+Percent CPU 1446.000000
+Context Switches 4213442.000000
+Sleeps 3512267.000000
+
+Fri Nov  3 11:06:33 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1743.990000
+User Time 20859.100000
+System Time 4203.210000
+Percent CPU 1437.000000
+Context Switches 4181372.000000
+Sleeps 3494386.000000
+
+Fri Nov  3 11:39:14 AM EDT 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1757.260000
+User Time 21017.780000
+System Time 4327.840000
+Percent CPU 1442.000000
+Context Switches 4202494.000000
+Sleeps 3493085.000000
+
+Fri Nov 10 01:22:45 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 2202.730000
+User Time 20955.680000
+System Time 4293.000000
+Percent CPU 1146.000000
+Context Switches 3343581.000000
+Sleeps 3178284.000000
+
+Fri Nov 10 03:04:58 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 2180.290000
+User Time 20956.920000
+System Time 4234.990000
+Percent CPU 1155.000000
+Context Switches 3292524.000000
+Sleeps 3142523.000000
+
+Fri Nov 10 04:06:45 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1989.720000
+User Time 21559.590000
+System Time 4341.330000
+Percent CPU 1301.000000
+Context Switches 3655877.000000
+Sleeps 3291905.000000
+
+Fri Nov 10 05:10:56 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 2005.520000
+User Time 21630.370000
+System Time 4364.700000
+Percent CPU 1296.000000
+Context Switches 3694129.000000
+Sleeps 3265050.000000
+
+Fri Nov 10 06:10:24 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1902.740000
+User Time 21929.510000
+System Time 4426.020000
+Percent CPU 1385.000000
+Context Switches 4073768.000000
+Sleeps 3398866.000000
+
+Fri Nov 10 07:03:33 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1911.730000
+User Time 22151.510000
+System Time 4421.290000
+Percent CPU 1389.000000
+Context Switches 3977133.000000
+Sleeps 3347839.000000
+
+Fri Nov 10 07:54:14 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1887.510000
+User Time 22406.340000
+System Time 4464.070000
+Percent CPU 1423.000000
+Context Switches 4210643.000000
+Sleeps 3476246.000000
+
+Fri Nov 10 08:42:06 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1896.080000
+User Time 22430.280000
+System Time 4608.470000
+Percent CPU 1426.000000
+Context Switches 4291614.000000
+Sleeps 3457631.000000
+
+Fri Nov 10 09:28:01 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1901.190000
+User Time 22945.890000
+System Time 4685.350000
+Percent CPU 1453.000000
+Context Switches 4436056.000000
+Sleeps 3556157.000000
+
+Fri Nov 10 10:11:01 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1897.350000
+User Time 22982.560000
+System Time 4630.680000
+Percent CPU 1455.000000
+Context Switches 4455101.000000
+Sleeps 3548890.000000
+
+Fri Nov 10 10:47:37 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1886.970000
+User Time 22628.650000
+System Time 4546.470000
+Percent CPU 1440.000000
+Context Switches 4408522.000000
+Sleeps 3533718.000000
+
+Fri Nov 10 11:31:46 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1891.740000
+User Time 22721.910000
+System Time 4592.950000
+Percent CPU 1443.000000
+Context Switches 4345803.000000
+Sleeps 3503557.000000
+
+Fri Nov 10 12:18:12 PM EST 2023
+6.1.36vsched+
+Mon Nov 13 09:56:19 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1783.600000
+User Time 20676.720000
+System Time 4112.950000
+Percent CPU 1389.000000
+Context Switches 4772903.000000
+Sleeps 4028616.000000
+
+Mon Nov 13 10:46:53 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1792.010000
+User Time 20837.710000
+System Time 4122.320000
+Percent CPU 1392.000000
+Context Switches 4819453.000000
+Sleeps 4025231.000000
+
+Mon Nov 13 11:25:43 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1748.210000
+User Time 20915.030000
+System Time 4155.210000
+Percent CPU 1434.000000
+Context Switches 5134792.000000
+Sleeps 4223811.000000
+
+Mon Nov 13 12:02:46 PM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1758.880000
+User Time 21137.250000
+System Time 4156.400000
+Percent CPU 1438.000000
+Context Switches 5161854.000000
+Sleeps 4225630.000000
+
+Mon Nov 13 12:37:35 PM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1735.620000
+User Time 21151.610000
+System Time 4250.320000
+Percent CPU 1463.000000
+Context Switches 5428001.000000
+Sleeps 4423122.000000
+
+Mon Nov 13 01:11:54 PM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1757.510000
+User Time 21288.750000
+System Time 4415.480000
+Percent CPU 1462.000000
+Context Switches 5425419.000000
+Sleeps 4418904.000000
+
+Mon Nov 13 01:49:33 PM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1749.280000
+User Time 21111.420000
+System Time 4370.520000
+Percent CPU 1456.000000
+Context Switches 5318971.000000
+Sleeps 4359309.000000
+
+Mon Nov 13 02:24:09 PM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1766.010000
+User Time 21399.610000
+System Time 4315.490000
+Percent CPU 1456.000000
+Context Switches 5325682.000000
+Sleeps 4358190.000000
+
+Sat Nov 18 01:06:57 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1795.080000
+User Time 20961.550000
+System Time 4148.690000
+Percent CPU 1398.000000
+Context Switches 4825279.000000
+Sleeps 4030899.000000
+
+Sat Nov 18 01:51:20 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1780.760000
+User Time 20832.070000
+System Time 4158.130000
+Percent CPU 1403.000000
+Context Switches 4821561.000000
+Sleeps 4044921.000000
+
+Sat Nov 18 02:29:40 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1735.700000
+User Time 20790.560000
+System Time 4170.360000
+Percent CPU 1438.000000
+Context Switches 5164290.000000
+Sleeps 4234474.000000
+
+Sat Nov 18 03:06:38 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1746.590000
+User Time 20977.980000
+System Time 4213.220000
+Percent CPU 1442.000000
+Context Switches 5169924.000000
+Sleeps 4212046.000000
+
+Sat Nov 18 03:42:38 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1727.380000
+User Time 21049.310000
+System Time 4244.160000
+Percent CPU 1464.000000
+Context Switches 5426523.000000
+Sleeps 4422739.000000
+
+Sat Nov 18 04:16:18 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1741.610000
+User Time 21206.390000
+System Time 4351.700000
+Percent CPU 1467.000000
+Context Switches 5446576.000000
+Sleeps 4424236.000000
+
+Sat Nov 18 04:53:30 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1743.020000
+User Time 21092.370000
+System Time 4276.960000
+Percent CPU 1455.000000
+Context Switches 5323580.000000
+Sleeps 4354249.000000
+
+Sat Nov 18 05:28:55 AM EST 2023
+6.1.36vsched+
+Average Optimal load -j 32 Run (std deviation):
+Elapsed Time 1750.300000
+User Time 21130.700000
+System Time 4362.050000
+Percent CPU 1456.000000
+Context Switches 5323986.000000
+Sleeps 4330959.000000
+

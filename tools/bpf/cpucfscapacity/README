@@ -1,0 +1,18 @@
+This is a demo of a scheduler bpf program.
+
+It allows to load, attach and pin bpf scheduler programs.
+
+To build, please, specify the path to the patched linux kernel tree at the top
+of the Makefile.
+
+generate the vmlinux.h
+
+bpftool btf dump file /sys/kernel/btf/vmlinux format c > vmlinux.h
+
+
+fatal error: 'bpf_helper_defs.h' file not found
+
+cd tools/lib/bpf
+make
+
+Then run $ ./atc --help for available commands/options.
