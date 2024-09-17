@@ -26,7 +26,8 @@ extern void set_avg_latency(unsigned long latency,int cpu);
 
 
 
-void set_capacities(char *data) {
+void set_capacities(char *data) 
+{
 	char *token, *cur;
 	char *data_copy;
 	int index = 0;
@@ -35,7 +36,7 @@ void set_capacities(char *data) {
 	data_copy = kstrdup(data, GFP_KERNEL);
 	if (!data_copy)
         	return;
-
+            
  	cur = data_copy;
  	while ((token = strsep(&cur, ";")) != NULL) {
         if (*token == '\0')
@@ -46,7 +47,6 @@ void set_capacities(char *data) {
 	set_avg_latency(1,1);
 	index=index+1;
     }
-
     kfree(data_copy);
     return;
 }
@@ -105,5 +105,5 @@ module_init(sched_capacity_module_init);
 module_exit(sched_capacity_module_exit);
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Your Name");
+MODULE_AUTHOR("Edward Guo");
 MODULE_DESCRIPTION("A Linux Module to set custom capacity");

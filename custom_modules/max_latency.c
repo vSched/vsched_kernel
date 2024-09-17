@@ -61,8 +61,6 @@ static ssize_t myread(struct file *file, char __user *ubuf,size_t count, loff_t 
     // Iterate over each online CPU
     for_each_online_cpu(cpu) {
 	get_max_latency(cpu,&max_latency);
-	printk("%d",cpu);
-	printk("%llu",max_latency);
         // Call your function for this CPU and append the result to the buffer
         len += snprintf(buf + len, sizeof(buf) - len, "CPU %d:\n%llu\n", cpu, max_latency);
         // Check if the buffer is full

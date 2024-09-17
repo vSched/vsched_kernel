@@ -17,7 +17,7 @@ MODULE_LICENSE("Dual BSD/GPL");
 MODULE_AUTHOR("Liran B.H");
 
 static struct proc_dir_entry **ent;
-extern void get_fine_stl_preempts(int cpunum, u64* preempt, u64* steals_time);
+extern void get_fine_stl_preempts(int cpunum, u64* preempt, u64* steal_time);
 
 static ssize_t mywrite(struct file *file, const char __user *ubuf, size_t count, loff_t *ppos) 
 {
@@ -29,13 +29,13 @@ static ssize_t myread(struct file *file, char __user *ubuf, size_t count, loff_t
 {
     char buf[BUFSIZE];
     int len = 0;
-    u64 preempt, steals_time;
+    u64 preempt, steal_time;
     int cpu = (int)(long)pde_data(file_inode(file));
 
     printk(KERN_DEBUG "read handler for CPU %d\n", cpu);
 
-    get_fine_stl_preempts(cpu, &preempt, &steals_time);
-    len = snprintf(buf, sizeof(buf), "CPU %d:\n%llu\n%llu\n", cpu, preempt, steals_time);
+    get_fine_stl_preempts(cpu, &preempt, &steal_time);
+    len = snprintf(buf, sizeof(buf), "CPU %d:\n%llu\n%llu\n", cpu, preempt, steal_time);
 
     if (*ppos > 0 || count < len)
         return 0;

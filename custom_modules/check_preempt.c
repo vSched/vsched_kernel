@@ -61,7 +61,7 @@ static ssize_t myread(struct file *file, char __user *ubuf,size_t count, loff_t 
     if(is_cpu_preempted(2)){
     	printk("Preempt Registered");
     }else{
-	printk("cpu is not preempted);
+	printk("cpu is not preempted");
 	}
     return len;
 }

@@ -150,7 +150,7 @@ const_debug unsigned int sysctl_sched_nr_migrate = SCHED_NR_MIGRATE_BREAK;
 void get_fine_stl_preempts(int cpunum,u64* preempt,u64* steals_time){
 	struct rq *rq = cpu_rq(cpunum);
 	*preempt= rq->preemptions;
-	*steals_time= rq->prev_steal_time;
+	*steals_time= paravirt_steal_clock(cpunum);;
 }
 
 int get_asym_flag(int dummy){
