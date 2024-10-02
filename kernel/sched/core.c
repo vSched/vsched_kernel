@@ -147,10 +147,22 @@ __read_mostly int sysctl_resched_latency_warn_once = 1;
  * Limited because this is done with IRQs disabled.
  */
 const_debug unsigned int sysctl_sched_nr_migrate = SCHED_NR_MIGRATE_BREAK;
+
+int average_capacity_all = 0;
+
 void get_fine_stl_preempts(int cpunum,u64* preempt,u64* steals_time){
 	struct rq *rq = cpu_rq(cpunum);
 	*preempt= rq->preemptions;
 	*steals_time= paravirt_steal_clock(cpunum);;
+}
+
+int get_average_capacity_all(){
+	return average_capacity_all;
+}
+
+void set_average_capacity_all(int av_capacity){
+	average_capacity_all = av_capacity;
+	return;
 }
 
 int get_asym_flag(int dummy){
@@ -192,6 +204,9 @@ EXPORT_SYMBOL(get_asym_flag);
 EXPORT_SYMBOL(set_asym_flag);
 EXPORT_SYMBOL(set_avg_latency);
 EXPORT_SYMBOL(reset_max_latency);
+EXPORT_SYMBOL(get_average_capacity_all);
+EXPORT_SYMBOL(set_average_capacity_all);
+
 __read_mostly int scheduler_running;
 
 #ifdef CONFIG_SCHED_CORE

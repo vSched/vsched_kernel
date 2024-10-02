@@ -115,7 +115,7 @@ extern void calc_global_load_tick(struct rq *this_rq);
 extern long calc_load_fold_active(struct rq *this_rq, long adjust);
 
 extern void call_trace_sched_update_nr_running(struct rq *rq, int count);
-
+extern int average_capacity_all;
 extern unsigned int sysctl_sched_rt_period;
 extern int sysctl_sched_rt_runtime;
 extern int sched_rr_timeslice;
@@ -894,6 +894,8 @@ extern void set_custom_latency(unsigned long custom_latency,int cpu);
 extern void get_fine_stl_preempts(int cpunum,u64* preempt,u64* steals_time);
 extern void get_max_latency(int cpunum,u64* max_latency);
 extern void set_avg_latency(int cpunum,u64 avg_latency);
+extern void set_average_capacity_all(int av_capacity);
+extern int get_average_capacity_all(void);
 extern int set_asym_flag(int dummy);
 extern int get_asym_flag(int dummy);
 extern void reset_max_latency(u64 max_latency);

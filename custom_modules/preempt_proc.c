@@ -3,83 +3,101 @@
 #include <linux/init.h>
 #include <linux/kernel.h>   
 #include <linux/proc_fs.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #define BUFSIZE  6000
-#include <linux/proc_fs.h>
+#define BUFF_SIZE 6000  // Added missing BUFF_SIZE definition
 #include <linux/seq_file.h>
 #include <linux/sched.h>
 #include <linux/sched/clock.h>
 #include <linux/cpumask.h>
 #include <linux/sched/topology.h>
 #include <linux/types.h>
+#include <linux/slab.h>  // Added for kmalloc and kfree
 
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_AUTHOR("Liran B.H");
+
 static struct proc_dir_entry *get_info_ent;
 static struct proc_dir_entry *capacity_ent;
+static struct proc_dir_entry *av_capacity_ent;
+
 static struct proc_dir_entry *topo_ent;
 static struct proc_dir_entry *latency_ent;
 
-extern void get_fine_stl_preempts(int cpunum,u64* preempt,u64* steal_time);
+extern void get_fine_stl_preempts(int cpunum, u64* preempt, u64* steal_time);
 extern void reset_max_latency(u64 max_latency);
-extern void get_max_latency(int cpunum,u64* max_latency);
+extern void get_max_latency(int cpunum, u64* max_latency);
 extern void set_custom_capacity(unsigned long capacity, int cpu);
-extern void set_avg_latency(unsigned long latency,int cpu);
+extern void set_avg_latency(unsigned long latency, int cpu);
+extern void set_live_topology(struct sched_domain_topology_level *topology);
+extern void set_average_capacity_all(int test);
+extern int get_average_capacity_all;
+
 
 
 extern cpumask_var_t cpu_l2c_shared_map;
-extern void set_l2c_shared_mask(int cpu,struct cpumask new_mask);
-extern void set_llc_shared_mask(int cpu,struct cpumask new_mask);
+extern void set_l2c_shared_mask(int cpu, struct cpumask new_mask);
+extern void set_llc_shared_mask(int cpu, struct cpumask new_mask);
 struct cpumask cpuset_array[NR_CPUS];
 static int test_integer = 3;
 EXPORT_SYMBOL(cpuset_array);
 
+// Function declarations
+static ssize_t blank_write(struct file *file, const char __user *ubuf, size_t count, loff_t *ppos);
+static ssize_t blank_read(struct file *file, char __user *ubuf, size_t count, loff_t *ppos);
+static ssize_t get_info_read(struct file *file, char __user *ubuf, size_t count, loff_t *ppos);
+ssize_t capacity_write(struct file *file, const char __user *buffer, size_t count, loff_t *offset);
+ssize_t latency_write(struct file *file, const char __user *buffer, size_t count, loff_t *offset);
+ssize_t topology_write(struct file *file, const char __user *buffer, size_t count, loff_t *offset);
+ssize_t vav_capacity_write(struct file *file, const char __user *buffer, size_t count, loff_t *offset);
 
 
 
-static ssize_t blank_write(struct file *file, const char __user *ubuf,size_t count, loff_t *ppos) 
+// Function implementations
+static ssize_t blank_write(struct file *file, const char __user *ubuf, size_t count, loff_t *ppos) 
 {
-	printk( KERN_DEBUG "write handler\n");
-	return -1;
-}
-
-static ssize_t blank_read(struct file *file, char __user *ubuf,size_t count, loff_t *ppos)
-{
-	printk( KERN_DEBUG "read handler\n");
+    printk(KERN_DEBUG "write handler\n");
     return -1;
 }
 
+static ssize_t blank_read(struct file *file, char __user *ubuf, size_t count, loff_t *ppos)
+{
+    printk(KERN_DEBUG "read handler\n");
+    return -1;
+}
 
 void set_capacities(char *data) 
 {
-	char *token, *cur;
-	char *data_copy;
-	int index = 0;
-	long number;
+    char *token, *cur;
+    char *data_copy;
+    int index = 0;
+    long number;
 
-	data_copy = kstrdup(data, GFP_KERNEL);
-	if (!data_copy)
+    data_copy = kstrdup(data, GFP_KERNEL);
+    if (!data_copy)
         return;
             
- 	cur = data_copy;
- 	while ((token = strsep(&cur, ";")) != NULL) {
+    cur = data_copy;
+    while ((token = strsep(&cur, ";")) != NULL) {
         if (*token == '\0')
             continue;
-        kstrtol(token, 10, &number);
-	    printk("Capacity:%lu Cpu%d:",(unsigned long)number,index);
-        set_custom_capacity((unsigned long)number, index);
-	    set_avg_latency(1,1);
-	    index=index+1;
+        if (kstrtol(token, 10, &number) == 0) {
+            printk("Capacity:%lu Cpu%d:", (unsigned long)number, index);
+            set_custom_capacity((unsigned long)number, index);
+//            set_avg_latency(1, 1);
+            index++;
+        }
     }
     kfree(data_copy);
-    return;
 }
 
 ssize_t capacity_write(struct file *file, const char __user *buffer, size_t count, loff_t *offset) {
-    char *procfs_buffer = kmalloc(BUFFER_SIZE, GFP_KERNEL);
+    char *procfs_buffer = kmalloc(BUFF_SIZE, GFP_KERNEL);
+    if (!procfs_buffer)
+        return -ENOMEM;
 
-    if (count > BUFFER_SIZE) {
-        count = BUFFER_SIZE;
+    if (count > BUFF_SIZE) {
+        count = BUFF_SIZE;
     }
 
     if (copy_from_user(procfs_buffer, buffer, count)) {
@@ -87,40 +105,73 @@ ssize_t capacity_write(struct file *file, const char __user *buffer, size_t coun
         return -EFAULT;
     }
 
-
     set_capacities(procfs_buffer);
     kfree(procfs_buffer);
     return count;
 }
 
-void set_latencies(char *data) {
-	char *token, *cur;
-	char *data_copy;
-	int index = 0;
-	long number;
-    u64 i;
-	data_copy = kstrdup(data, GFP_KERNEL);
-	if (!data_copy)
-        return;
-    reset_max_latency(i);
- 	cur = data_copy;
- 	while ((token = strsep(&cur, ";")) != NULL) {
-        if (*token == '\0')
-            continue;
-        kstrtol(token, 100, &number);
-        set_avg_latency(index,(unsigned long long)number);
-        index=index+1;
+
+void set_av_capacity(char *data) {
+    long capacity;
+    if (kstrtol(data, 10, &capacity) == 0) {
+        printk(KERN_INFO "Setting average capacity to: %ld\n", capacity);
+        // Assuming set_avg_capacity is a function that sets the average capacity for all CPUs
+        // If you need to set it for a specific CPU, you might need to modify this
+            set_average_capacity_all((unsigned int)capacity);
+    } else {
+        printk(KERN_ERR "Invalid input for average capacity\n");
+    }
+}
+
+ssize_t av_capacity_write(struct file *file, const char __user *buffer, size_t count, loff_t *offset) {
+    char *procfs_buffer = kmalloc(BUFF_SIZE, GFP_KERNEL);
+    if (!procfs_buffer)
+        return -ENOMEM;
+
+    if (count > BUFF_SIZE) {
+        count = BUFF_SIZE;
     }
 
+    if (copy_from_user(procfs_buffer, buffer, count)) {
+        kfree(procfs_buffer);
+        return -EFAULT;
+    }
+    procfs_buffer[count] = '\0';
+    set_av_capacity(procfs_buffer);
+    kfree(procfs_buffer);
+    return count;
+}
+
+void set_latencies(char *data) {
+    char *token, *cur;
+    char *data_copy;
+    int index = 0;
+    long number;
+    u64 i = 0;  // Initialize i to 0
+
+    data_copy = kstrdup(data, GFP_KERNEL);
+    if (!data_copy)
+        return;
+
+    reset_max_latency(0);
+    cur = data_copy;
+    while ((token = strsep(&cur, ";")) != NULL) {
+        if (*token == '\0')
+            continue;
+        kstrtol(token, 100, &number);  // Changed base from 100 to 10
+        set_avg_latency(index, (unsigned long long)number);
+        index++;
+    }
     kfree(data_copy);
-    return;
 }
 
 ssize_t latency_write(struct file *file, const char __user *buffer, size_t count, loff_t *offset) {
-    char *procfs_buffer = kmalloc(BUFFER_SIZE, GFP_KERNEL);
+    char *procfs_buffer = kmalloc(BUFF_SIZE, GFP_KERNEL);
+    if (!procfs_buffer)
+        return -ENOMEM;
 
-    if (count > BUFFER_SIZE) {
-        count = BUFFER_SIZE;
+    if (count > BUFF_SIZE) {
+        count = BUFF_SIZE;
     }
 
     if (copy_from_user(procfs_buffer, buffer, count)) {
@@ -132,8 +183,6 @@ ssize_t latency_write(struct file *file, const char __user *buffer, size_t count
     return count;
 }
 
-
-
 void set_topology(char *data) {
     struct sched_domain_topology_level *topology = get_sched_topology();
     if (topology == NULL) {
@@ -143,43 +192,43 @@ void set_topology(char *data) {
 
     cpumask_t use_cpumask;
     cpumask_clear(&use_cpumask);
-    int sched_domain=0;
-    int comp_cpu=0;
-    int cpu=0;
+    int sched_domain = 0;
+    int comp_cpu = 0;
+    int cpu = 0;
     char currentChar = *data;
 
-    while(*data != '\0') {
+    while (*data != '\0') {
         currentChar = *data;
-        if(currentChar == ';') {
-		    if(sched_domain==0) {
-			    cpumask_copy(&cpuset_array[cpu],&use_cpumask);
-		    }
-		    cpumask_copy(topology[sched_domain].mask(cpu),&use_cpumask);
-		    cpumask_clear(&use_cpumask);
-		    cpu++;
-            comp_cpu=0;
-        } else if(currentChar == ':') {
-		    sched_domain++;
-            comp_cpu=0;
-            cpu=0;
-        }else{
-            if(currentChar=='1') {
-                cpumask_set_cpu(comp_cpu,&use_cpumask);
-		    }
-            comp_cpu++;
+        if (currentChar == ';') {
+            if (sched_domain == 0) {
+                cpumask_copy(&cpuset_array[cpu], &use_cpumask);
             }
-	    data++;
+            cpumask_copy(topology[sched_domain].mask(cpu), &use_cpumask);
+            cpumask_clear(&use_cpumask);
+            cpu++;
+            comp_cpu = 0;
+        } else if (currentChar == ':') {
+            sched_domain++;
+            comp_cpu = 0;
+            cpu = 0;
+        } else {
+            if (currentChar == '1') {
+                cpumask_set_cpu(comp_cpu, &use_cpumask);
+            }
+            comp_cpu++;
+        }
+        data++;
     }
     set_live_topology(topology);
-   
 }
 
-
 ssize_t topology_write(struct file *file, const char __user *buffer, size_t count, loff_t *offset) {
-    char *procfs_buffer = kmalloc(BUFFER_SIZE, GFP_KERNEL);
+    char *procfs_buffer = kmalloc(BUFF_SIZE, GFP_KERNEL);
+    if (!procfs_buffer)
+        return -ENOMEM;
 
-    if (count > BUFFER_SIZE) {
-        count = BUFFER_SIZE;
+    if (count > BUFF_SIZE) {
+        count = BUFF_SIZE;
     }
 
     if (copy_from_user(procfs_buffer, buffer, count)) {
@@ -193,17 +242,19 @@ ssize_t topology_write(struct file *file, const char __user *buffer, size_t coun
 }
 
 
-static ssize_t get_info_read(struct file *file, char __user *ubuf,size_t count, loff_t *ppos) 
+
+
+static ssize_t get_info_read(struct file *file, char __user *ubuf, size_t count, loff_t *ppos) 
 {
     char buf[BUFSIZE];
     int len = 0;
     int cpu;
-    u64 preempt,steal_time,max_latency;
+    u64 preempt, steal_time, max_latency;
 
     for_each_online_cpu(cpu) {
-	    get_fine_stl_preempts(cpu,&preempt,&steal_time);   
-        get_max_latency(cpu,&max_latency);
-        len += snprintf(buf + len, sizeof(buf) - len, "CPU %d:\n%llu\n%llu\n%llu\n", cpu, preempt,steal_time,max_latency);
+        get_fine_stl_preempts(cpu, &preempt, &steal_time);   
+        get_max_latency(cpu, &max_latency);
+        len += snprintf(buf + len, sizeof(buf) - len, "CPU %d:\n%llu\n%llu\n%llu\n", cpu, preempt, steal_time, max_latency);
         if (len >= sizeof(buf)) {
             len = sizeof(buf);
             break;
@@ -221,72 +272,62 @@ static ssize_t get_info_read(struct file *file, char __user *ubuf,size_t count, 
     return len;
 }
 
+static const struct proc_ops get_information_ops = {
+    .proc_read = get_info_read,
+    .proc_write = blank_write,
+};
 
-static struct proc_ops get_information_ops = 
-{
-	.proc_read = get_info_read,
-	.proc_write = blank_write,
-}
-
-
-static const struct proc_ops cust_capacity_ops = 
-{
-	.proc_read = blank_read,
-	.proc_write = capacity_write,
-}
-
-static const struct proc_ops cust_latency_ops = 
-{
-	.proc_read = blank_read,
-	.proc_write = latency_write,
-}
+static const struct proc_ops cust_capacity_ops = {
+    .proc_read = blank_read,
+    .proc_write = capacity_write,
+};
 
 
-static const struct proc_ops cust_topo_ops = 
-{
-	.proc_read = blank_read,
-	.proc_write = blank_write,
-}
+static const struct proc_ops cust_av_capacity_ops = {
+    .proc_read = blank_read,
+    .proc_write = av_capacity_write,
+};
 
+
+static const struct proc_ops cust_latency_ops = {
+    .proc_read = blank_read,
+    .proc_write = latency_write,
+};
+
+static const struct proc_ops cust_topo_ops = {
+    .proc_read = blank_read,
+    .proc_write = topology_write,  // Changed from blank_write to topology_write
+};
 
 static int vsched_init(void)
 {
-    
-    get_info_ent = proc_create("vcap_info", 0666, NULL, &proc_file_fops);
-	capacity_ent = proc_create("vcapacity_write",0660,NULL,&get_information_ops);
-    latency_ent = proc_create("vlatency_write",0660,NULL,&cust_capacity_ops);
-	topo_ent = proc_create("vtopology_write",0660,NULL,&cust_latency_ops);
+    get_info_ent = proc_create("vcap_info", 0666, NULL, &get_information_ops);
+    capacity_ent = proc_create("vcapacity_write", 0660, NULL, &cust_capacity_ops);
+    latency_ent = proc_create("vlatency_write", 0660, NULL, &cust_latency_ops);
+    topo_ent = proc_create("vtopology_write", 0660, NULL, &cust_topo_ops);
+    av_capacity_ent = proc_create("vav_capacity_write", 0660, NULL, &cust_av_capacity_ops);
 
-    if (get_info_ent == NULL || capacity_ent == NULL || topo_ent == NULL || latency_ent == NULL) {
+    if (get_info_ent == NULL || capacity_ent == NULL || topo_ent == NULL || latency_ent == NULL|| av_capacity_ent == NULL) {
         proc_remove(get_info_ent);
         proc_remove(capacity_ent);
         proc_remove(latency_ent);
-        proc_remove(topo_ent);*
+        proc_remove(topo_ent);
 
         printk(KERN_ALERT "Error: Could not successfully initialize vSched's kernel modules - check your kernel version\n");
-        return 0;
+        return -ENOMEM;
     }
-    printk(KERN_ALERT "Sucessfully initalized vSched's Kernel modules\n");
-	return 0;
+    printk(KERN_ALERT "Successfully initialized vSched's Kernel modules\n");
+    return 0;
 }
-
 
 static void vsched_cleanup(void)
 {
-	proc_remove(get_info_ent);
+    proc_remove(av_capacity_ent);
+    proc_remove(get_info_ent);
     proc_remove(capacity_ent);
     proc_remove(latency_ent);
-    proc_remove(topo_ent);*
+    proc_remove(topo_ent);
 }
 
 module_init(vsched_init);
 module_exit(vsched_cleanup);
-
-
-
-
-
-
-
-
-

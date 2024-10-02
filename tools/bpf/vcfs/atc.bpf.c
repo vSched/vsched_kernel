@@ -6,7 +6,7 @@
 #include <bpf/bpf_tracing.h>
 //#include <linux/sched.h>
 
-#define NR_CPUS 16
+#define NR_CPUS 12
 #define for_each_cpu_wrap(cpu, mask, start)	\
 	for ((cpu) = 0; (cpu) < 1; (cpu)++, (void)mask, (void)(start))
 struct cpu_die_map_type {
@@ -26,7 +26,7 @@ static inline void decrement_nr_migrating() {
 __u64 out__runqueues_addr = -1;
 __u64 out__bpf_prog_active_addr = -1;
 __u32 out__rq_cpu = -1; /* percpu struct fields */
-
+int cpu_av=500;
 
 int out__bpf_prog_active = -1; /* percpu int */
 __u32 out__this_rq_cpu = -1;
@@ -108,24 +108,12 @@ int BPF_PROG(test,struct rq *rq,u64 now,unsigned int idle_cpus)
 {
 	struct task_struct *curr = rq->curr;
 	s64 delta_exec;
-//	bpf_printk("what");
-	if((rq->cfs.h_nr_running-rq->cfs.idle_h_nr_running == 1) && (curr != rq->idle) && rq->cpu_capacity<680){
-//	if((rq->cfs.h_nr_running>0) && (curr != rq->idle)){
+	if((rq->cfs.h_nr_running-rq->cfs.idle_h_nr_running == 1) && (curr != rq->idle) && rq->cpu_capacity<900){
 		if(rq->last_preemption !=0 && idle_cpus>0){
-//		if(rq->last_preemption !=0){
 			u64 prev_time_brk = 1000000;
 			if(prev_time_brk < get_tsf(now,rq) && (rq->preempt_migrate_locked != 1)){
-//				bpf_printk("current task %s util %d",curr->comm,curr->se.avg.util_avg);
-//				if (curr->se.avg.util_est.enqueued > 500) {
-			//	bpf_printk("nr_migrating %d",nr_migrating);
-			//	bpf_printk("idle_cpus%",idle_cpus);
 				int util_perc = (curr->se.avg.util_avg * 100) / (1L << 10) ; 
-//				bpf_printk("cpu capacity custom %d",rq->cpu_capacity_custom);
-//				bpf_printk("current task %s util %d",curr->comm,util_perc); 
 				if (util_perc > 60) {
-//					nr_migrating+=1;
-//					if(rq->preempt_migrate_locked != 1){
-//					}
 	 				return 1;
 				}
                         }
@@ -180,6 +168,7 @@ int select_run_cpu_time(struct rq *rq, struct rq *select_rq,u64 now_time,int max
         }
         if(select_rq->last_active_time>now_time){
                 return -1;
+
         }
         struct rq *last_max_rq = bpf_per_cpu_ptr(&runqueues, max);
         if(!last_max_rq){
@@ -251,14 +240,14 @@ static int process_cpu(u32 iter, struct task_ctx *ctx1)
 					return 0;
 				}
 
-				if(*preemption_val<select_rq->last_preemption && select_rq->cpu_capacity>300){
+				if(*preemption_val<select_rq->last_preemption && select_rq->cpu_capacity>500){
 					*preemption_val = select_rq->last_preemption;
 					*fin = (int) (cpu);
 					return 0;
 				}
 				return 0;
 			}
-			if(select_rq->cpu_capacity>300 && idle_cpu(0,select_rq) && !(ctx1->has_sched_idle == 0)){
+			if(select_rq->cpu_capacity>cpu_av && idle_cpu(0,select_rq) && !(ctx1->has_sched_idle == 0)){
 				  *(ctx1->preemption_val)=select_rq->idle_stamp;
 
                                         *fin = (int) (cpu);
