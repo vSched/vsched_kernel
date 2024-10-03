@@ -201,7 +201,7 @@ struct task_ctx {
     u64 rq_lst_prmpt;
     int *has_sched_idle;
     int *best_cpc;
-    unsigned long new_bits;
+    int average_capacity;
 };
 
 
@@ -247,7 +247,7 @@ static int process_cpu(u32 iter, struct task_ctx *ctx1)
 				}
 				return 0;
 			}
-			if(select_rq->cpu_capacity>cpu_av && idle_cpu(0,select_rq) && !(ctx1->has_sched_idle == 0)){
+			if(select_rq->cpu_capacity>ctx1->average_capacity && idle_cpu(0,select_rq) && !(ctx1->has_sched_idle == 0)){
 				  *(ctx1->preemption_val)=select_rq->idle_stamp;
 
                                         *fin = (int) (cpu);
@@ -260,58 +260,6 @@ static int process_cpu(u32 iter, struct task_ctx *ctx1)
 }
 
 
-static int process_cpu_numa(u32 iter, struct task_ctx *ctx1)
-{
-        struct task_struct *curr = ctx1->curr;
-        int cpu = (iter+ctx1->start) % NR_CPUS;
-        unsigned long cpumask_bits = ctx1->new_bits;
-        int test = cpumask_bits & (1UL << cpu);
-        int *fin = ctx1->res_value;
-        u64 *preemption_val = ctx1->preemption_val;
-        u64 soon_preempt = 0;
-        if(test){
-                struct rq *select_rq = bpf_per_cpu_ptr(&runqueues,cpu);
-                if(select_rq){
-                        int islocked = select_rq->prmpt_flags.counter & (1 << (2));
-                        if(islocked){
-                                return 0;
-                        }
-                        if(select_rq->cfs.h_nr_running-select_rq->cfs.idle_h_nr_running==1){
-                               return 0;
-                        }
-
-                        if(select_rq->nr_running>0 && select_rq->curr->policy == 5){
-                                ctx1->has_sched_idle = 1;
-                                u64 preemption_decider = is_cpu_preempted(select_rq,ctx1->now);
-                                if(preemption_decider<5000000 && preemption_decider !=0){
-                                        return 0;
-                                }
-                                if(ctx1->now-select_rq->last_preemption>1000000 && preemption_decider == 0){
-                                        return 0;
-                                }
-
-                                if((select_rq->last_preemption)<=(ctx1->rq_lst_prmpt) && preemption_decider==0){
-                                        return 0;
-                                }
-
-                                if(*preemption_val<select_rq->last_preemption && select_rq->cpu_capacity>500){
-                                        *preemption_val = select_rq->last_preemption;
-                                        *fin = (int) (cpu);
-                                        return 0;
-                                }
-                                return 0;
-                        }
-                        if(select_rq->cpu_capacity>500 && idle_cpu(0,select_rq) && !(ctx1->has_sched_idle == 0)){
-                                  *(ctx1->preemption_val)=select_rq->idle_stamp;
-
-                                        *fin = (int) (cpu);
-                                        return 0;
-                        }
-
-                }
-        };
-        return 0;
-}
 
 static int test_preemption(u32 iter, struct task_ctx *ctx1)
 {
@@ -344,7 +292,7 @@ static int test_preemption(u32 iter, struct task_ctx *ctx1)
 }
 
 SEC("sched/cfs_select_run_cpu_spin")
-int BPF_PROG(test3, struct rq *rq, struct task_struct *curr, u64 now_time, unsigned long cpu_bitmap)
+int BPF_PROG(test3, struct rq *rq, struct task_struct *curr, u64 now_time, int average_capacity)
 {
     int start = 0;
     u32 nr_loops = NR_CPUS-1;
@@ -365,7 +313,7 @@ int BPF_PROG(test3, struct rq *rq, struct task_struct *curr, u64 now_time, unsig
 	.rq_lst_prmpt = rq->last_preemption,
 	.has_sched_idle=&has_sched_idle,
 	.best_cpc=&best_cpc,
-        .new_bits=cpu_bitmap
+        .average_capacity=average_capacity
     };
      //if (curr->policy == 5) {
       //        return -1;

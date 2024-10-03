@@ -200,6 +200,7 @@ void set_topology(char *data) {
 
     int corr_index = 0;
     while (*data != '\0') {
+
         currentChar = *data;
         if (currentChar == ';') {
             if (sched_domain == 0) {
@@ -222,68 +223,43 @@ void set_topology(char *data) {
         data++;
 	corr_index++;
     }
-    int num_cpus;
-    set_live_topology(topology);
-}
+    int max_cpu = 12
 
-#define MAX_TOPOLOGY_LEVEL 3  // As per your userspace code (levels 3, 4, 5)
+    while (some condition){
+        if(corr_index % 12 == 0 && !(corr_index!=0)){
+		if (sched_domain == 0){
+			cpumask_copy(&cpuset_array[cpu], &use_cpumask);
+		}
+		cpumask_copy(topology[sched_domain].mask(cpu), &use_cpumask);
+		cpumask_clear(&use_cpumask);
+		cpu++;
+		comp_cpu = 0;
+	}
 
-void set_topology_new(const char *data, size_t count) {
-    struct sched_domain_topology_level *topology = get_sched_topology();
-    if (topology == NULL) {
-        printk(KERN_WARNING "Failed to retrieve Scheduling Domain Topology.\n");
-        return;
+
+
+    	corr_index+=1
     }
 
-    int num_cpus = num_present_cpus();  // Get the actual number of CPUs in the system
-    int sched_domain = 0;
-    int cpu = 0;
-    size_t bit_index = 0;
-    cpumask_t use_cpumask;
-
-    while (bit_index < count * 8 && sched_domain < MAX_TOPOLOGY_LEVEL) {
-        cpumask_clear(&use_cpumask);
-
-        // Read bits for current CPU
-        for (int comp_cpu = 0; comp_cpu < num_cpus && bit_index < count * 8; comp_cpu++, bit_index++) {
-            if (test_bit(bit_index, (unsigned long *)data)) {
-                cpumask_set_cpu(comp_cpu, &use_cpumask);
-            }
-        }
-
-        if (sched_domain == 0) {
-            cpumask_copy(&cpuset_array[cpu], &use_cpumask);
-        }
-        cpumask_copy(topology[sched_domain].mask(cpu), &use_cpumask);
-
-        cpu++;
-
-        // If we've processed all CPUs for this level or reached end of data
-        if (cpu == num_cpus || bit_index >= count * 8) {
-            sched_domain++;
-            cpu = 0;
-        }
-    }
 
     set_live_topology(topology);
 }
 
 ssize_t topology_write(struct file *file, const char __user *buffer, size_t count, loff_t *offset) {
-//    char *procfs_buffer = kmalloc(BUFF_SIZE, GFP_KERNEL);
-    char *procfs_buffer = kmalloc(count, GFP_KERNEL);
+    char *procfs_buffer = kmalloc(BUFF_SIZE, GFP_KERNEL);
     if (!procfs_buffer)
         return -ENOMEM;
 
-    //if (count > BUFF_SIZE) {
-    //    count = BUFF_SIZE;
-    //}
+    if (count > BUFF_SIZE) {
+        count = BUFF_SIZE;
+    }
 
     if (copy_from_user(procfs_buffer, buffer, count)) {
         kfree(procfs_buffer);
         return -EFAULT;
     }
 
-    set_topology_new(procfs_buffer,count);
+    set_topology(procfs_buffer);
     kfree(procfs_buffer);
     return count;
 }

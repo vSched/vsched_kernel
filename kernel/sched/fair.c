@@ -11878,7 +11878,7 @@ int running_migration(struct rq *rq) {
 	nr_ivh +=1;
         if(should_spin_lock) {
         	raw_spin_lock(&my_spinlock);
-                target_cpu = bpf_sched_cfs_select_run_cpu_spin(rq,curr_tsk,now_time);
+                target_cpu = bpf_sched_cfs_select_run_cpu_spin(rq,curr_tsk,now_time,average_capacity_all);
                 if(target_cpu != -1) {
                 	atomic_fetch_or(PRMPT_HELD_MASK,prmpt_flags(target_cpu));
                 }
