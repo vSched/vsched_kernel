@@ -6930,7 +6930,7 @@ static int select_idle_sibling(struct task_struct *p, int prev, int target)
 	lockdep_assert_irqs_disabled();
 	int should_bias = bpf_sched_cfs_should_bias(1);
 	if(should_bias) {
-		int select_cpu = bpf_sched_cfs_latency_select(prev,p,nohz.idle_cpus_mask,util_min,util_max);
+		int select_cpu = bpf_sched_cfs_latency_select(prev,p,nohz.idle_cpus_mask,average_capacity_all,num_online_cpus());
 		if(select_cpu != -1){
         		return ((unsigned)select_cpu < nr_cpumask_bits) ? select_cpu : target;
 		}
@@ -11878,7 +11878,7 @@ int running_migration(struct rq *rq) {
 	nr_ivh +=1;
         if(should_spin_lock) {
         	raw_spin_lock(&my_spinlock);
-                target_cpu = bpf_sched_cfs_select_run_cpu_spin(rq,curr_tsk,now_time,average_capacity_all);
+                target_cpu = bpf_sched_cfs_select_run_cpu_spin(rq,curr_tsk,now_time,average_capacity_all,num_online_cpus());
                 if(target_cpu != -1) {
                 	atomic_fetch_or(PRMPT_HELD_MASK,prmpt_flags(target_cpu));
                 }

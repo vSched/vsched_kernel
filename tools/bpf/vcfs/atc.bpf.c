@@ -6,7 +6,6 @@
 #include <bpf/bpf_tracing.h>
 //#include <linux/sched.h>
 
-#define NR_CPUS 12
 #define for_each_cpu_wrap(cpu, mask, start)	\
 	for ((cpu) = 0; (cpu) < 1; (cpu)++, (void)mask, (void)(start))
 struct cpu_die_map_type {
@@ -202,13 +201,14 @@ struct task_ctx {
     int *has_sched_idle;
     int *best_cpc;
     int average_capacity;
+    int total_cpus;
 };
 
 
 static int process_cpu(u32 iter, struct task_ctx *ctx1)
 {
 	struct task_struct *curr = ctx1->curr;
-	int cpu = (iter+ctx1->start) % NR_CPUS;
+	int cpu = (iter+ctx1->start) % 12;
 	cpumask_t *cpumask = curr->cpus_ptr;
         unsigned long cpumask_bits = *(cpumask->bits);
 	int test = cpumask_bits & (1UL << cpu);
@@ -264,7 +264,7 @@ static int process_cpu(u32 iter, struct task_ctx *ctx1)
 static int test_preemption(u32 iter, struct task_ctx *ctx1)
 {
 	struct task_struct *curr = ctx1->curr;
-        int cpu = (iter+ctx1->start) % NR_CPUS;
+        int cpu = (iter+ctx1->start) % ctx1->total_cpus;
 	if(cpu>5){
 		return 0;
 	}
@@ -292,10 +292,10 @@ static int test_preemption(u32 iter, struct task_ctx *ctx1)
 }
 
 SEC("sched/cfs_select_run_cpu_spin")
-int BPF_PROG(test3, struct rq *rq, struct task_struct *curr, u64 now_time, int average_capacity)
+int BPF_PROG(test3, struct rq *rq, struct task_struct *curr, u64 now_time, int average_capacity,int total_cpus)
 {
     int start = 0;
-    u32 nr_loops = NR_CPUS-1;
+    u32 nr_loops = total_cpus-1;
     int re_value = -1;
     u64 preemption_val = 9999999999999999999;
     int best_non_numa=-1;
@@ -313,7 +313,8 @@ int BPF_PROG(test3, struct rq *rq, struct task_struct *curr, u64 now_time, int a
 	.rq_lst_prmpt = rq->last_preemption,
 	.has_sched_idle=&has_sched_idle,
 	.best_cpc=&best_cpc,
-        .average_capacity=average_capacity
+        .average_capacity=average_capacity,
+	.total_cpus=total_cpus
     };
      //if (curr->policy == 5) {
       //        return -1;
@@ -336,14 +337,12 @@ SEC("sched/cfs_should_bias")
 int BPF_PROG(test6,int test)
 {
 //	bpf_printk("should bias");
-        return 0;
+        return 1;
 }
 
 struct latency_ctx {
     struct task_struct *curr;
     struct cpumask *idle_cpus;
-    u64 util_min;
-    u64 util_max;
     int *res_value;
     int start;
     u64 *max_latency;
@@ -352,6 +351,8 @@ struct latency_ctx {
     u64 *max_latency_bad;
     u64 now;
     u64 *long_at;
+    int total_cpus;
+    int average_capacity;
 };
 
 
@@ -368,7 +369,10 @@ struct latency_ctx {
 static int search_latency(u32 iter, struct latency_ctx *ctx1)
 {
 	struct task_struct *curr = ctx1->curr;
-        int cpu = (iter+ctx1->start) % NR_CPUS;
+        int cpu = (iter+ctx1->start) % ctx1->total_cpus;
+        if(iter >= ctx1->total_cpus){
+            return 1;
+        }
         cpumask_t *cpumask = curr->cpus_ptr;
         unsigned long cpumask_bits = *(cpumask->bits);
         int test = cpumask_bits & (1UL << cpu);
@@ -377,9 +381,9 @@ static int search_latency(u32 iter, struct latency_ctx *ctx1)
 	u64 *preemption_val = ctx1->preemption_val;
 	struct rq *select_rq = bpf_per_cpu_ptr(&runqueues,cpu);
         if(test){
-
 		if(select_rq){ 
 //		if(0){
+		
 		if((select_rq->nr_running == select_rq->cfs.idle_h_nr_running) && select_rq->nr_running > 0){
 				if(select_rq->cpu_capacity>1000){
                                 	*fin=cpu;
@@ -387,16 +391,16 @@ static int search_latency(u32 iter, struct latency_ctx *ctx1)
                                 }
 				//Active Pass
 				//ctx1 now is the current cpus clock_preempt value
-				if(1){
-				if(select_rq->cpu_capacity>300 &&
+				//if(0){
+				if(select_rq->cpu_capacity>(ctx1->average_capacity) &&
 				(ctx1->now < select_rq->last_preemption || ctx1->now-select_rq->last_preemption<1000000)){
                                			*(ctx1->long_at) = select_rq->last_active_time;
-                                		*fin = cpu;
+                               		*fin = cpu;
                                 		return 1;
                         		}
-				}
+				///}
 				//(can't find an active core?)
-				if(select_rq->cpu_capacity>300
+				if(select_rq->cpu_capacity>(ctx1->average_capacity)
 							&& select_rq->avg_latency<=*(ctx1->max_latency)){
                                 	*(ctx1->max_latency) = select_rq->avg_latency;
                                 	*fin = cpu;
@@ -407,15 +411,18 @@ static int search_latency(u32 iter, struct latency_ctx *ctx1)
 
                                return 0;
                 }
+		
 		if(idle_cpu(1,select_rq)){
 			//if a cpu is uncontested, just pick it
 			if(select_rq->cpu_capacity>1000){
 			        *fin=cpu;
 				return 1;
 			}
+//			bpf_printk("cpu %d has latency%llu",cpu,select_rq->avg_latency);
 			//normal loop, if a cpu is less then the median - ignore it. Otherwise pick lowest latency
 			//TODO set up proper median logic
-			if(select_rq->cpu_capacity>500 && select_rq->avg_latency<=*(ctx1->max_latency)){
+			//if(select_rq->avg_latency<=*(ctx1->max_latency)){
+			if(select_rq->cpu_capacity>(ctx1->average_capacity) && select_rq->avg_latency<=*(ctx1->max_latency)){
 				*(ctx1->max_latency) = select_rq->avg_latency;
 				*fin = cpu;
 				*(ctx1->has_good_cpu)=1;
@@ -423,9 +430,9 @@ static int search_latency(u32 iter, struct latency_ctx *ctx1)
 			}
 			//if(*(ctx1->has_good_cpu)==0){
 			//	if(select_rq->avg_latency<=*(ctx1->max_latency_bad)){
-					//*(ctx1->max_latency_bad) = select_rq->avg_latency;
-					//*fin = cpu;
-					return 0;
+			//		*(ctx1->max_latency_bad) = select_rq->avg_latency;
+			//		*fin = cpu;
+			//		return 0;
 			//	}
 			//}
 
@@ -436,19 +443,20 @@ static int search_latency(u32 iter, struct latency_ctx *ctx1)
 }
 
 
-
 SEC("sched/cfs_latency_select")
-int BPF_PROG(test5,int prev,struct task_struct *curr,struct cpumask *idle_cpus,unsigned long util_min,unsigned long util_max)
+
+int BPF_PROG(test32, int prev,struct task_struct *curr,struct cpumask *idle_cpus,int average_capacity,int total_cpus)
 {
+	
     	int start = 0;
-    	u32 nr_loops =NR_CPUS-1;
+    	int nr_loops = total_cpus;
     	int re_value = -1;
 	u64 preemption_val = 0;
 	int util_perc = (curr->se.avg.util_avg * 100) / (1L << 10) ;
         if (util_perc > 10 || curr->policy == 5 ) {
               return -1;
         }
-	u64 max_latency = 9999999999999;
+	u64 max_latency = 999999999999;
         u64 max_latency_bad = 9999999999999;
     	int best_non_numa=-1;
         int has_good_cpu=0;
@@ -470,8 +478,6 @@ int BPF_PROG(test5,int prev,struct task_struct *curr,struct cpumask *idle_cpus,u
     	struct latency_ctx ctx1 = {
         	.curr = curr,
         	.res_value = &re_value,
-        	.util_min = util_min,
-		.util_max = util_max,
 		.idle_cpus = idle_cpus,
         	.start = prev,
 		.preemption_val = &preemption_val,
@@ -479,19 +485,23 @@ int BPF_PROG(test5,int prev,struct task_struct *curr,struct cpumask *idle_cpus,u
 		.has_good_cpu = &has_good_cpu,
                 .max_latency_bad = &max_latency_bad,
 		.now = now,
-		.long_at = &long_at
+		.long_at = &long_at,
+		.total_cpus = total_cpus,
+		.average_capacity = average_capacity
 	};
-
-	bpf_loop(nr_loops, &search_latency, &ctx1, 0);
-	//bpf_printk("found one %d",re_value);
+	bpf_loop(256, &search_latency, &ctx1, 0);
+	bpf_printk("found one %d",re_value);
 	return re_value;
 }
 
-SEC("sched/cfs_latency_profile")
-int BPF_PROG(test7,int cpu_select,u64 clock_now)
-{
-        return 1;
-}
+
+
+
+
+
+
+
+
 
 SEC("sched/cfs_correct_migration")
 int BPF_PROG(test8,int cpu_select)

@@ -158,7 +158,8 @@ void set_latencies(char *data) {
     while ((token = strsep(&cur, ";")) != NULL) {
         if (*token == '\0')
             continue;
-        kstrtol(token, 100, &number);  // Changed base from 100 to 10
+        kstrtol(token, 10, &number);  // Changed base from 100 to 10
+	printk("cpu at %d has latency: %llu",index,(unsigned long long) number);
         set_avg_latency(index, (unsigned long long)number);
         index++;
     }
