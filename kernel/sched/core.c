@@ -1318,6 +1318,9 @@ static noinline int __cpuidle custom_idle_poll(int cpu)
 		if(counter>spin_len){
 			break;
 		}
+		if(is_cpu_preempted(cpu)){
+			break;
+		}
 		if((idle_cpu(cpu)) ){
 			break;
 		}
