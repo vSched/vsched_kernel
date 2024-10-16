@@ -1,5 +1,5 @@
 # FIX ME
-TREE=/home/ubuntu/vSched-Kernel
+TREE=/home/ubuntu/vsched_main/vsched_kernel
 
 BPFTOOL=$(TREE)/tools/bpf/bpftool/bpftool
 LIBBPF=$(TREE)/tools/lib/bpf/libbpf.a
