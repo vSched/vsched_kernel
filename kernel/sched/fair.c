@@ -10922,7 +10922,7 @@ update_next_balance(struct sched_domain *sd, unsigned long *next_balance)
  * least 1 task to be running on each physical CPU where possible, and
  * avoids physical / logical imbalances.
  */
-
+//Stopper thread to move IVHed thread
 int migrate_task_to_async_fair(void *data)
 {
         struct rq *busiest_rq = data;
@@ -10942,10 +10942,6 @@ int migrate_task_to_async_fair(void *data)
          */
         if (!cpu_active(busiest_cpu))
                 goto out_unlock;
-	//if((now_time - busiest_rq->broadcast_migrate>1000000) && (now_time > busiest_rq->broadcast_migrate))
-        //        goto out_unlock;
-	//if(sched_clock()-target_rq->wakeup_stamp>1000000)
-	//	goto out_unlock;
 
         /* Make sure the requested CPU hasn't gone down in the meantime: */
         if (unlikely(busiest_cpu != smp_processor_id()))
@@ -10994,8 +10990,6 @@ out_unlock:
 		target_rq->avg_wakeup_latency=-1;
 	}
         atomic_fetch_andnot(PRMPT_HELD_MASK,prmpt_flags(target_cpu));
-	//target_rq->broadcast_migrate=1;
-	//average_wakeup_latency = target_rq->avg_wakeup_latency;
 	local_irq_enable();
         return 0;
 }
@@ -11857,37 +11851,37 @@ static __latent_entropy void run_rebalance_domains(struct softirq_action *h)
 }
 
 
-struct rq *get_cpu_rq(int cpu)
-{
-    return cpu_rq(cpu);
-}
 
 
-
+//IVH main starter function
 int running_migration(struct rq *rq) {
 	u64 now_time=sched_clock();
+		//check if the IVH process should be begun
         int should_run = bpf_sched_cfs_sched_tick_end(rq,now_time,cpumask_weight(nohz.idle_cpus_mask));
         if(!should_run || rq->preempt_migrate_locked == 1){
-		return 0;
+			return 0;
         }
         int cpu = cpu_of(rq);
-	int target_cpu = -1;
-	int iterate_cpu;
+	     int target_cpu = -1;
+	     int iterate_cpu;
         struct task_struct *curr_tsk = rq->curr;
+		 //helper hook to determine if selection process should be spin-locked or not. On by default.
         int should_spin_lock = bpf_sched_cfs_should_spinlock(1);
-	nr_ivh +=1;
+	     nr_ivh +=1;
+		 //Spinlock pass
         if(should_spin_lock) {
         	raw_spin_lock(&my_spinlock);
-                target_cpu = bpf_sched_cfs_select_run_cpu_spin(rq,curr_tsk,now_time,average_capacity_all,num_online_cpus());
-                if(target_cpu != -1) {
-                	atomic_fetch_or(PRMPT_HELD_MASK,prmpt_flags(target_cpu));
-                }
-                raw_spin_unlock(&my_spinlock);
-	}else{
+			//Target selection hook
+           target_cpu = bpf_sched_cfs_select_run_cpu_spin(rq,curr_tsk,now_time,average_capacity_all,num_online_cpus());
+           if(target_cpu != -1) {
+                atomic_fetch_or(PRMPT_HELD_MASK,prmpt_flags(target_cpu));
+           }
+           raw_spin_unlock(&my_spinlock);
+		}else{
+		//non spinlock variant to IVH selection(off by default)	
 		int max=-1;
 		int tmpmax= -1;
 		int flags;
-		raw_spin_lock(&my_spinlock);
 		for_each_cpu_wrap(iterate_cpu, &curr_tsk->cpus_mask,cpu) {
 			if(!idle_cpu(iterate_cpu)) {
 				continue;
@@ -11910,23 +11904,17 @@ int running_migration(struct rq *rq) {
 				}
 			}
 		}
-		raw_spin_unlock(&my_spinlock);
-	}
-	nr_ivh -=1;
-        if(target_cpu!=-1){
+		}
+		nr_ivh -=1;
+		//found a target cpu, start migration process
+       if(target_cpu!=-1){
 		struct rq *targ_rq=cpu_rq(target_cpu);
 		rq->preempt_migrate_locked=1;
 		rq->preempt_migrate_target=target_cpu;
 		targ_rq->preempt_migrate.info=rq;
 		targ_rq->wakeup_stamp=sched_clock();
-		int correct_migration = bpf_sched_cfs_correct_migration(1);
-		if(correct_migration){
-			smp_call_function_single_async(target_cpu, &targ_rq->preempt_migrate);
-		}else{
-			stop_one_cpu_nowait(rq->cpu,
-                                        migrate_task_to_async_fair, rq,
-                                        &rq->preempt_migrate_work);
-		}
+		//send IPI
+		smp_call_function_single_async(target_cpu, &targ_rq->preempt_migrate);
 		return 1;
         }
 

@@ -90,8 +90,6 @@ const struct cpumask *cpu_coregroup_mask(int cpu);
 const struct cpumask *cpu_clustergroup_mask(int cpu);
 void update_siblings_masks(unsigned int cpu);
 void remove_cpu_topology(unsigned int cpuid);
-void set_l2c_shared_mask(int cpu,cpuset_t cpuset);
-void set_llc_shared_mask(int cpu,cpuset_t cpuset);
 void reset_cpu_topology(void);
 int parse_acpi_topology(void);
 #endif

@@ -289,7 +289,7 @@ int is_cpu_preempted(int cpunum)
 	if(time_diff>1500000){
 		return 1;
 	}
-        return 0;
+   return 0;
 }
 
 EXPORT_SYMBOL(is_cpu_preempted);

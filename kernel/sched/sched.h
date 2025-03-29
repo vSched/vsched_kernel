@@ -891,13 +891,11 @@ extern void sched_put_rd(struct root_domain *rd);
 extern void set_custom_capacity(unsigned long custom_capacity,int cpu);
 extern void set_custom_latency(unsigned long custom_latency,int cpu);
 /* used to give information to the VCPU prober */
-extern void get_fine_stl_preempts(int cpunum,u64* preempt,u64* steals_time);
+extern void get_steal_and_preemptions(int cpunum,u64* preempt,u64* steals_time);
 extern void get_max_latency(int cpunum,u64* max_latency);
 extern void set_avg_latency(int cpunum,u64 avg_latency);
 extern void set_average_capacity_all(int av_capacity);
 extern int get_average_capacity_all(void);
-extern int set_asym_flag(int dummy);
-extern int get_asym_flag(int dummy);
 extern void reset_max_latency(u64 max_latency);
 #ifdef HAVE_RT_PUSH_IPI
 extern void rto_push_irq_work_func(struct irq_work *work);

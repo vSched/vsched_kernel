@@ -1,0 +1,15 @@
+These are the bpf hooks to enable vscheds optimizations
+To build, please, specify the path to the patched linux kernel tree at the top
+of the Makefile.
+
+generate the vmlinux.h
+
+../bpftool/bpftool btf dump file /sys/kernel/btf/vmlinux format c > vmlinux.h
+
+
+fatal error: 'bpf_helper_defs.h' file not found
+
+cd ../../tools/lib/bpf
+make
+
+Then run $ ./vsc --help for available commands/options.

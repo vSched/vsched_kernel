@@ -691,22 +691,6 @@ const struct cpumask *cpu_clustergroup_mask(int cpu)
 	return cpu_l2c_shared_mask(cpu);
 }
 
-void set_l2c_shared_mask(int cpu,struct cpumask new_mask)
-{
-
-	*cpu_l2c_shared_mask(cpu)=new_mask;
-	return;
-}
-EXPORT_SYMBOL(set_l2c_shared_mask);
-
-void set_llc_shared_mask(int cpu,struct cpumask new_mask)
-{
-	*cpu_llc_shared_mask(cpu)=new_mask;
-	return;
-}
-
-EXPORT_SYMBOL(set_llc_shared_mask);
-
 static void impress_friends(void)
 {
 	int cpu;

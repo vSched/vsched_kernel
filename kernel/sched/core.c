@@ -149,41 +149,35 @@ __read_mostly int sysctl_resched_latency_warn_once = 1;
 const_debug unsigned int sysctl_sched_nr_migrate = SCHED_NR_MIGRATE_BREAK;
 
 int average_capacity_all = 0;
-
-void get_fine_stl_preempts(int cpunum,u64* preempt,u64* steals_time){
+//get accurate steal time and preemptions
+void get_steal_and_preemptions(int cpunum,u64* preempt,u64* steals_time){
 	struct rq *rq = cpu_rq(cpunum);
 	*preempt= rq->preemptions;
 	*steals_time= paravirt_steal_clock(cpunum);;
 }
-
+//get average capacity of all cores in the system, set by vCapacity, used by the bpf hooks
 int get_average_capacity_all(){
 	return average_capacity_all;
 }
-
+//set average capacity of all cores in the system, done by vCapacity
 void set_average_capacity_all(int av_capacity){
 	average_capacity_all = av_capacity;
 	return;
 }
 
-int get_asym_flag(int dummy){
-	return static_key_enabled(&sched_asym_cpucapacity);
-}
-
-int set_asym_flag(int dummy){
-	static_branch_inc_cpuslocked(&sched_asym_cpucapacity);
-	return 1;
-}
-
-void get_max_latency(int cpunum,u64* max_latency){
+//get max latency of cores in the system, set by vCapacity, used by the bpf hooks
+void get_max_latency(int cpunum,u64* max_latency){ 
 	struct rq *rq = cpu_rq(cpunum);
 	*max_latency= rq->max_latency;
 }
 
+//get avg latency of cores in the system, set by vCapacity, used by the bpf hooks
 void set_avg_latency(int cpunum,u64 avg_latency){
 	struct rq *rq = cpu_rq(cpunum);
 	rq->avg_latency = avg_latency;
 }
-
+//reset max latency to some value. Meant to be used to get the max latency of a specific time frame
+//e.g reset_max_latency - - - - - - - - get_max_latency will get the max latency from between the calls
 void reset_max_latency(u64 max_latency){
 	int cpu;
 	for_each_online_cpu(cpu){
@@ -191,17 +185,15 @@ void reset_max_latency(u64 max_latency){
 		rq->max_latency= max_latency;
 	}
 }
-
+//meant to set custom capacity for each core
 void set_custom_capacity(unsigned long custom_capacity, int cpu) {
         struct rq *rq = cpu_rq(cpu);
         rq->cpu_capacity_custom = custom_capacity;
 }
 
 EXPORT_SYMBOL(set_custom_capacity);
-EXPORT_SYMBOL(get_fine_stl_preempts);
+EXPORT_SYMBOL(get_steal_and_preemptions);
 EXPORT_SYMBOL(get_max_latency);
-EXPORT_SYMBOL(get_asym_flag);
-EXPORT_SYMBOL(set_asym_flag);
 EXPORT_SYMBOL(set_avg_latency);
 EXPORT_SYMBOL(reset_max_latency);
 EXPORT_SYMBOL(get_average_capacity_all);
@@ -1233,126 +1225,46 @@ static void nohz_csd_func(void *info)
 
 #endif /* CONFIG_NO_HZ_COMMON */
 
-struct int_arg {
-        int                             dest_cpu;
-};
-
-
-static int spin_up_function(void *data) {
-    struct int_arg *arg = data;
-    struct rq *rq = cpu_rq(arg->dest_cpu);
-    int this_cpu = smp_processor_id();
-    //rq->preempt_migrate_flag=1;
-    u64 start;
-    int nr_running;
-    pr_info("Kernel thread running on CPU %d\n", smp_processor_id());
-    pr_info("Source cpu is  %d\n", cpu_of(rq));
-    return 0;
-    start = rq_clock(this_rq());
-    u64 now;
-    while (!kthread_should_stop()) {
-        now = rq_clock(this_rq());
-        nr_running = this_rq()->nr_running;
-        //if i'm running more then one task, I'm active anyway,no need to be here any longer
-        if (nr_running != 1) { 
-		return 0;
-        }
-        //if the destination is preempted, or we've been doing this for too long, might as well give up.
-        if( (((now-start)>3000000)) || (is_cpu_preempted(arg->dest_cpu))){
-                return 0;
-        }
-        pr_info("Kernel thread running on CPU %d\n", smp_processor_id());
-    }
-    return 0;
-}
-
-static int my_kthread_function(void *data) {
-    struct rq *rq;
-    unsigned int cpu;
-
-    // Keep running until told to stop
-    while (!kthread_should_stop()) {
-        set_current_state(TASK_INTERRUPTIBLE);
-        cpu = smp_processor_id(); // Get the current CPU ID
-        rq = cpu_rq(cpu); // Get the runqueue for the current CPU
-        // Accessing rq fields should be done carefully considering locking
-        // Assuming here you have a safe way to access or evaluate rq->nr_running
-        // For demonstration, just print the CPU number and loop
-        printk(KERN_INFO "Checking CPU %u; nr_running: %d\n", cpu, rq->nr_running);
-        // You might want to check conditions here and break the loop if necessary
-        // For example, 
-	if (rq->nr_running > 1) {
-		break; 
-	}
-
-        schedule(); // Yield the processor
-    }
-
-    return 0;
-}
-
-void my_work_function(struct work_struct *work) {
-    unsigned int cpu = smp_processor_id();
-    struct rq *rq = cpu_rq(cpu); // Access the runqueue for the current CPU
-
-    // Safety note: In a real-world scenario, ensure proper synchronization when accessing rq
-    if (rq->nr_running > 1) { // More than one task running indicates the presence of other tasks
-        printk(KERN_INFO "CPU %u has other tasks running.\n", cpu);
-    } else {
-        printk(KERN_INFO "CPU %u has no other tasks running. Rescheduling work.\n", cpu);
-        // Immediately reschedule the work if no other tasks are running
-        schedule_work(work);
-    }
-}
-//TODO: This waits forever, needs fix for safety
+//polling done by target vcpu
 static noinline int __cpuidle custom_idle_poll(int cpu)
 {
-	//stop_critical_timings();
-	//ct_idle_enter();
 	local_irq_enable();
 	int counter=0;
 	int spin_len = bpf_sched_cfs_spin_len(1);
 	while(!tif_need_resched())	{
-		//cpu_relax();
-		//cpu_relax();
+		cpu_relax();
 		if(counter>spin_len){
 			break;
 		}
 		if(is_cpu_preempted(cpu)){
 			break;
 		}
-		if((idle_cpu(cpu)) ){
+		if(idle_cpu(cpu)){
 			break;
 		}
 		counter++;
 	}
-	//ct_idle_exit();
-	//start_critical_timings();
 	return 1;
 }
 
+//target vcpu's function to call the task to it
 static void preempt_migrate_func(void *info)
 {
 	static struct task_struct *my_thread;
 	static struct work_struct my_work;
 	struct rq *rq = info;
 	struct rq *this_rq = this_rq();
-        //rq->preempt_migrate_flag=1;
-	if(1){
+	if(!is_cpu_preempted(rq->cpu)){
 		rq->broadcast_migrate=sched_clock();
 		stop_one_cpu_nowait(rq->cpu,
                                         migrate_task_to_async_fair, rq,
                                         &rq->preempt_migrate_work);
 		custom_idle_poll(rq->cpu);
 	}else{
-
 		rq->preempt_migrate_locked = 0;
-        	atomic_fetch_andnot(PRMPT_HELD_MASK,prmpt_flags(smp_processor_id()));
+       atomic_fetch_andnot(PRMPT_HELD_MASK,prmpt_flags(smp_processor_id()));
 	}
-	//raise_softirq_irqoff(SCHED_SOFTIRQ);
-        //int ret = sched_setscheduler(spin_up_function, SCHED_IDLE, &param);
 }
-
 #ifdef CONFIG_NO_HZ_FULL
 bool sched_can_stop_tick(struct rq *rq)
 {
@@ -2520,7 +2432,6 @@ struct migration_arg {
 	struct set_affinity_pending	*pending;
 };
 
-
 /*
  * @refs: number of wait_for_completion()
  * @stop_pending: is @stop_work in use
@@ -2658,13 +2569,9 @@ out:
 
 	if (complete)
 		complete_all(&pending->done);
-	
+
 	return 0;
 }
-
-
-
-
 
 int push_cpu_stop(void *arg)
 {
@@ -3845,6 +3752,7 @@ static void ttwu_do_wakeup(struct rq *rq, struct task_struct *p, int wake_flags,
 	if (rq->idle_stamp) {
 		u64 delta = rq_clock(rq) - rq->idle_stamp;
 		u64 max = 2*rq->max_idle_balance_cost;
+
 		update_avg(&rq->avg_idle, delta);
 
 		if (rq->avg_idle > max)
@@ -5712,7 +5620,6 @@ void scheduler_tick(void)
 
 #ifdef CONFIG_SMP
 	rq->idle_balance = idle_cpu(cpu);
-
 	trigger_load_balance(rq);
 #endif
 }
@@ -9314,24 +9221,6 @@ int migrate_task_to(struct task_struct *p, int target_cpu)
 	trace_sched_move_numa(p, curr_cpu, target_cpu);
 	return stop_one_cpu(curr_cpu, migration_cpu_stop, &arg);
 }
-
-int migrate_task_to_async(struct task_struct *p, int target_cpu)
-{
-        struct migration_arg arg = { p, target_cpu };
-        int curr_cpu = task_cpu(p);
-	struct rq *rq = cpu_rq(target_cpu);
-        if (curr_cpu == target_cpu)
-                return 0;
-
-        if (!cpumask_test_cpu(target_cpu, p->cpus_ptr))
-                return -EINVAL;
-
-        /* TODO: This is not properly updating schedstats */
-
-        trace_sched_move_numa(p, curr_cpu, target_cpu);
-        return stop_one_cpu_nowait(curr_cpu, migration_cpu_stop, &arg,&rq->preempt_migrate_work);
-}
-
 
 /*
  * Requeue a task on a given node and accurately track the number of NUMA

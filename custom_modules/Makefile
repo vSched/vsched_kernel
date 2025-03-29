@@ -1,5 +1,5 @@
 ifneq ($(KERNELRELEASE),)
-   obj-m := preempt_proc.o
+   obj-m := vsched_module.o
 else
 
 KERNELDIR ?= /lib/modules/$(shell uname -r)/build
